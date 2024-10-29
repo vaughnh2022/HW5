@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Vaughn Hartzell 001
  *
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
@@ -243,16 +243,42 @@ public class CuckooHash<K, V> {
 	 * @param key the key of the element to add
      * @param value the value of the element to add
 	 */
-
  	public void put(K key, V value) {
-
 		// ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME AT TOP OF FILE.
 		// Also make sure you read this method's prologue above, it should help
 		// you. Especially the two HINTS in the prologue.
-
-		return;
+		int pos=hash1(key); //first hash
+		boolean firstHash = true; //hash switcher
+		Bucket<K,V> hold=new Bucket<>(key,value); //value holder
+		int n=0; //iteration counter
+		boolean rehashed=false;
+		while(table[pos]!=null){ //while loop till we find an open position
+			rehashed=false;
+			if(n>CAPACITY/2){ // runs to half capacity?
+				System.out.println("this sucks");
+				rehashed=true;
+				rehash(); //rehashes values at new size
+				put(hold.getBucKey(),hold.getValue()); //restarts with new value
+				break; //break after calling again
+			}
+			Bucket<K,V> temp = hold; //temp bucket
+			hold=table[pos];
+			table[pos]=temp; //switch
+			if(firstHash){ //updates pos
+				pos=hash2(hold.getBucKey());
+			} else {
+				pos=hash1(hold.getBucKey());
+			}
+			//switch hash and interate
+			firstHash=!firstHash;
+			n++;
+		}
+		if(!rehashed){
+			table[pos]=hold;
+		}
+		
+	
 	}
-
 
 	/**
 	 * Method get
