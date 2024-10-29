@@ -255,10 +255,8 @@ public class CuckooHash<K, V> {
 		while(table[pos]!=null){ //while loop till we find an open position
 			rehashed=false;
 			if(n>CAPACITY/2){ // runs to half capacity?
-				System.out.println("this sucks");
+				System.out.println("this sucks "+ n);
 				rehashed=true;
-				rehash(); //rehashes values at new size
-				put(hold.getBucKey(),hold.getValue()); //restarts with new value
 				break; //break after calling again
 			}
 			Bucket<K,V> temp = hold; //temp bucket
@@ -275,9 +273,10 @@ public class CuckooHash<K, V> {
 		}
 		if(!rehashed){
 			table[pos]=hold;
+		} else {
+			rehash(); //rehashes values at new size
+			put(hold.getBucKey(),hold.getValue()); //restarts with new value
 		}
-		
-	
 	}
 
 	/**
