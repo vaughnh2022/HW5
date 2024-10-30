@@ -248,35 +248,29 @@ public class CuckooHash<K, V> {
 		// Also make sure you read this method's prologue above, it should help
 		// you. Especially the two HINTS in the prologue.
 		int pos=hash1(key); //first hash
-		boolean firstHash = true; //hash switcher
 		Bucket<K,V> hold=new Bucket<>(key,value); //value holder
-		int n=0; //iteration counter
-		boolean rehashed=false;
-		while(table[pos]!=null){ //while loop till we find an open position
-			rehashed=false;
-			if(n>CAPACITY/2){ // runs to half capacity?
-				System.out.println("this sucks "+ n);
-				rehashed=true;
-				break; //break after calling again
-			}
-			Bucket<K,V> temp = hold; //temp bucket
-			hold=table[pos];
-			table[pos]=temp; //switch
-			if(firstHash){ //updates pos
-				pos=hash2(hold.getBucKey());
+		if (table[pos] != null && table[pos].getValue().equals(value)){
+			return;
+		}
+		for(int a=0;a<CAPACITY;a++){
+			if(table[pos]==null){
+				table[pos]=hold;
+				return;
 			} else {
-				pos=hash1(hold.getBucKey());
+				// updated code so that I correctly update the bucket
+				Bucket<K,V> temp = table[pos];
+				table[pos]=hold;
+				hold=temp;
+				int idx = hash1(hold.getBucKey());
+				if (idx == pos) {
+					pos = hash2(hold.getBucKey());
+				} else {
+					pos = hash1(hold.getBucKey());
+				}
 			}
-			//switch hash and interate
-			firstHash=!firstHash;
-			n++;
 		}
-		if(!rehashed){
-			table[pos]=hold;
-		} else {
-			rehash(); //rehashes values at new size
-			put(hold.getBucKey(),hold.getValue()); //restarts with new value
-		}
+		rehash();
+		put(hold.getBucKey(),hold.getValue());
 	}
 
 	/**
